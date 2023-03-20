@@ -7,6 +7,7 @@ WORKDIR /yanua/src/app
 # where available (npm@5+)
 COPY package*.json ./
 COPY prisma ./prisma/
+COPY pgdata ./pgdata/
 
 RUN npm install --legacy-peer-deps
 # If you are building your code for production
