@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - dev-db
+    environment:
+      DATABASE_URL: postgresql://postgres:123@dev-db:5432/nest?schema=public
+      NODE_ENV: development
+      JWT_SECRET: superarray
+    ports:
+      - '3005:3001'
+
+  dev-db:
+    image: postgres:13
+    container_name: postgressql
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+
+networks:
+  default:
+    external:
+      name: teemoo

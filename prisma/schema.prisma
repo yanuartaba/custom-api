@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["filteredRelationCount"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash  String
+
+  name    String?
+  avatar  String?
+  isAdmin Boolean @default(false)
+
+  bookmarks Bookmark[]
+  tasks     Task[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  link        String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("bookmarks")
+}
+
+model Menu {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  label       String
+  codeGroup   String  @unique
+  urlParam    String
+  description String?
+  image       String?
+
+  isActive Boolean @default(true)
+
+  counters Counter[]
+  antrians Antrian[]
+  tasks    Task[]
+
+  @@map("menus")
+}
+
+model Counter {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nomorCounter String
+
+  group String
+  menu  Menu   @relation(fields: [group], references: [codeGroup])
+
+  tasks Task[]
+
+  @@map("counters")
+}
+
+model Antrian {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nomor    Int
+  isFinish Boolean @default(false)
+  isSkip   Boolean @default(false)
+
+  group String
+  menu  Menu   @relation(fields: [group], references: [codeGroup])
+
+  @@map("antrians")
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tanggal DateTime? @default(now())
+
+  antrianId Int @unique
+
+  petugasId Int
+  user      User @relation(fields: [petugasId], references: [id])
+
+  counterId Int
+  counter   Counter @relation(fields: [counterId], references: [id])
+
+  group String
+  menu  Menu   @relation(fields: [group], references: [codeGroup])
+
+  @@map("tasks")
+}
+
+model Media {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  isAsset Boolean @default(true)
+  isVideo Boolean @default(true)
+
+  url  String?
+  type String?
+
+  durasi Int?
+}
+
+model Setting {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  banner_type       BannerType @default(VIDEO)
+  durasi_transition Int        @default(5)
+  file_banner       Json?
+
+  logo_header String?
+  text_header String?
+  theme       Theme   @default(DEFAULT)
+  grid        Int     @default(4)
+
+  running_text_active Boolean @default(true)
+  running_text        String?
+
+  logo_print     String?
+  text_print     String?
+  fontsize_print Int     @default(20)
+
+  @@map("settings")
+}
+
+enum BannerType {
+  VIDEO
+  IMAGE
+}
+
+enum Theme {
+  DEFAULT
+  REDMINE
+  SUNSHINE
+}
