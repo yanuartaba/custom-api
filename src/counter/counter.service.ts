@@ -43,6 +43,19 @@ export class CounterService {
       );
     }
 
+    const existField =
+      await this.prisma.counter.findFirst({
+        where: {
+          nomorCounter: dto.nomorCounter,
+        },
+      });
+
+    if (existField) {
+      throw new BadRequestException(
+        'Nomor counter telah ada',
+      );
+    }
+
     const newCounter =
       await this.prisma.counter.create({
         data: {

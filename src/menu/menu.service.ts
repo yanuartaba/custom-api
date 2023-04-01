@@ -17,7 +17,7 @@ export class MenuService {
         orderBy: [{ codeGroup: 'asc' }],
         include: {
           antrians: {
-            where: { isFinish: false },
+            where: { statusAntrian: 1 },
             select: {
               id: true,
             },

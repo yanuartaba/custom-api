@@ -79,7 +79,7 @@ export class EventsGateway {
     const existQueue = this.queueService.query(
       (record) => record.queueId === data['id'],
     );
-    // console.log(existQueue);
+    console.log(data);
     if (existQueue.length < 1) {
       this.queueService.create({
         queueId: data['id'],
@@ -99,6 +99,31 @@ export class EventsGateway {
       queues,
     });
   }
+
+  @SubscribeMessage('changeStatus')
+  async changeStatus(
+    @MessageBody() data: object,
+  ): Promise<object> {
+    console.log(data);
+
+    this.server.sockets.emit('statusAntrian', {
+      data,
+    });
+    return data;
+  }
+
+  @SubscribeMessage('newAntrian')
+  async newAntrian(
+    @MessageBody() isNew: object,
+  ): Promise<object> {
+    console.log(isNew);
+
+    this.server.sockets.emit('newAntrian', {
+      isNew,
+    });
+    return isNew;
+  }
+
   // @SubscribeMessage('pingServer')
   // async pingServer(): Promise<object> {
   //   // console.log(data);

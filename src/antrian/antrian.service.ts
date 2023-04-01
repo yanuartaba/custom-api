@@ -1,6 +1,8 @@
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { CreateAntrianDto } from './dto/create-antrian.dto';
+import { EditAntrianDto } from './dto/edit-antrian.dto';
 import { PrismaService } from './../prisma/prisma.service';
+
 import {
   Injectable,
   NotFoundException,
@@ -12,35 +14,61 @@ export class AntrianService {
 
   async getAllAntrian(
     group: string,
-    isFinish: boolean,
-    isSkip: boolean,
+    statusAntrian: number,
+    listAntrian: boolean,
   ) {
     const dateNow =
       Date.now() - 24 * 60 * 60 * 1000;
     const date = new Date(dateNow).toISOString();
     // console.log(date);
-    const allAntrian =
-      await this.prisma.antrian.findMany({
-        where: {
-          AND: [
-            { group: group },
-            { isFinish: isFinish },
-            { isSkip: isSkip },
-            {
-              createdAt: {
-                gte: date,
+
+    if (listAntrian === true) {
+      const allAntrian =
+        await this.prisma.antrian.findMany({
+          where: {
+            AND: [
+              { group: group },
+              {
+                statusAntrian: {
+                  lte: statusAntrian,
+                },
               },
+              {
+                createdAt: {
+                  gte: date,
+                },
+              },
+            ],
+          },
+          orderBy: [
+            {
+              nomor: 'asc',
             },
           ],
-        },
-        orderBy: [
-          {
-            nomor: 'asc',
+        });
+      return allAntrian;
+    } else {
+      const allAntrian =
+        await this.prisma.antrian.findMany({
+          where: {
+            AND: [
+              { group: group },
+              { statusAntrian: statusAntrian },
+              {
+                createdAt: {
+                  gte: date,
+                },
+              },
+            ],
           },
-        ],
-      });
-
-    return allAntrian;
+          orderBy: [
+            {
+              nomor: 'asc',
+            },
+          ],
+        });
+      return allAntrian;
+    }
   }
 
   async createAntrian(dto: CreateAntrianDto) {
@@ -82,22 +110,42 @@ export class AntrianService {
 
     let nomorAntrian = 0;
     if (lastAntrian) {
-      nomorAntrian = lastAntrian.nomor + 1;
+      nomorAntrian = lastAntrian.nomorInt + 1;
     } else {
       nomorAntrian = 1;
     }
 
-    const newAntrian =
-      await this.prisma.antrian.create({
-        data: {
-          nomor: nomorAntrian,
-          group: dto.group,
-        },
-      });
+    let nomorStr = '';
+    if (nomorAntrian < 10) {
+      nomorStr = '00' + nomorAntrian.toString();
+    } else if (
+      nomorAntrian >= 10 &&
+      nomorAntrian < 100
+    ) {
+      nomorStr = '0' + nomorAntrian.toString();
+    } else {
+      nomorStr = nomorAntrian.toString();
+    }
 
-    return newAntrian;
+    try {
+      const newAntrian =
+        await this.prisma.antrian.create({
+          data: {
+            nomor: nomorStr,
+            nomorInt: nomorAntrian,
+            group: dto.group,
+          },
+        });
+      return newAntrian;
+    } catch (error) {
+      throw error;
+    }
   }
-  async updateAntrian(antrianId: number) {
+
+  async updateAntrian(
+    antrianId: number,
+    dto: EditAntrianDto,
+  ) {
     const antrianExist =
       await this.prisma.antrian.findFirst({
         where: {
@@ -117,8 +165,7 @@ export class AntrianService {
           id: antrianId,
         },
         data: {
-          isFinish: true,
-          isSkip: false,
+          statusAntrian: dto.statusAntrian,
         },
       });
 
@@ -145,7 +192,7 @@ export class AntrianService {
           id: antrianId,
         },
         data: {
-          isSkip: true,
+          statusAntrian: 3,
         },
       });
 

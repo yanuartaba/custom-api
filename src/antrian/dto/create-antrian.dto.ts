@@ -1,5 +1,6 @@
 import {
   IsNotEmpty,
+  IsNumber,
   // IsNumber,
   IsString,
 } from 'class-validator';
