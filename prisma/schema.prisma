@@ -127,6 +127,17 @@ model Setting {
   @@map("settings")
 }
 
+model Client {
+  id                  Int        @id @default(autoincrement())
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  email               String      
+  isFollowUp          Boolean     @default(false)
+  status              Int         @default(1)
+
+  @@map("clients")
+}
+
 enum BannerType {
   VIDEO
   IMAGE

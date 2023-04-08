@@ -15,6 +15,7 @@ import { EventsModule } from './socket/event.module';
 import { TaskModule } from './task/task.module';
 import { MediaModule } from './media/media.module';
 import { SettingModule } from './setting/setting.module';
+import { ClientPromoModule } from './client-promo/client-promo.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { SettingModule } from './setting/setting.module';
     TaskModule,
     MediaModule,
     SettingModule,
+    ClientPromoModule,
   ],
   controllers: [MenuController],
   providers: [MenuService],

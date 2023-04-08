@@ -45,8 +45,22 @@ export class CounterService {
 
     const existField =
       await this.prisma.counter.findFirst({
+        // where: {
+        //   nomorCounter: dto.nomorCounter,
+        // },
         where: {
-          nomorCounter: dto.nomorCounter,
+          AND: [
+            {
+              nomorCounter: {
+                equals: dto.nomorCounter,
+              },
+            },
+            {
+              group: {
+                equals: dto.group,
+              },
+            },
+          ],
         },
       });
 

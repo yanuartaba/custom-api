@@ -198,4 +198,10 @@ export class AntrianService {
 
     return skipAntrian;
   }
+
+  async statsAntrian(periode: string) {
+    // const antrians = this.prisma.filters()
+
+    return periode;
+  }
 }

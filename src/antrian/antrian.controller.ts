@@ -62,4 +62,14 @@ export class AntrianController {
       antrianId,
     );
   }
+
+  @UseGuards(JwtGuard)
+  @Get('/summary')
+  statsAntrian(
+    @Query('periode') periode: string,
+  ) {
+    return this.antrianService.statsAntrian(
+      periode,
+    );
+  }
 }

@@ -2,6 +2,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MaxLength,
   Validate,
 } from 'class-validator';
 import { IsUniqueConstraint } from '../decorator/isUnique.decorator';
@@ -13,6 +14,7 @@ export class CreateMenuDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(2)
   // @Validate(IsUniqueConstraint, ['menu'])
   codeGroup: string;
 
