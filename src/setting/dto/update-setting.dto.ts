@@ -66,4 +66,8 @@ export class UpdateSettingDto {
   @IsInt()
   @IsOptional()
   fontsize_print?: number;
+
+  @IsString()
+  @IsOptional()
+  pin_code: string;
 }

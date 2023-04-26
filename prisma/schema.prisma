@@ -74,6 +74,7 @@ model Antrian {
   group     String 
   statusAntrian Int  @default(1) 
   menu      Menu     @relation(fields: [group], references: [codeGroup])
+  tasks     Task[] 
 
   @@map("antrians")
 }
@@ -86,10 +87,11 @@ model Task {
   petugasId Int
   counterId Int
   group     String
-  antrianId Int       @unique
+  antrianId Int       
   counter   Counter   @relation(fields: [counterId], references: [id])
   menu      Menu      @relation(fields: [group], references: [codeGroup])
   user      User      @relation(fields: [petugasId], references: [id])
+  antrian   Antrian   @relation(fields: [antrianId], references: [id])
 
   @@map("tasks")
 }
@@ -123,6 +125,7 @@ model Setting {
   logo_print          String?
   text_print          String?
   fontsize_print      Int        @default(20)
+  pin_code            String?    @default("1234") 
 
   @@map("settings")
 }

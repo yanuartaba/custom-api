@@ -2,13 +2,15 @@ import {
   Body,
   Controller,
   Get,
-  Header,
   Headers,
+  HttpCode,
   Patch,
+  Post,
 } from '@nestjs/common';
 import { SettingService } from './setting.service';
 import { UpdateSettingDto } from './dto/update-setting.dto';
 import { HeaderDTO } from './dto/header.dto';
+import { PinCodeDTO } from './dto/pincode.dto';
 
 @Controller('setting')
 export class SettingController {
@@ -30,5 +32,11 @@ export class SettingController {
       dto,
       headers,
     );
+  }
+
+  @HttpCode(200)
+  @Post('code')
+  securePage(@Body() dto: PinCodeDTO) {
+    return this.settingService.securePage(dto);
   }
 }

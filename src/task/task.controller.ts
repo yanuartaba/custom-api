@@ -4,10 +4,12 @@ import { TaskService } from './task.service';
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -32,5 +34,13 @@ export class TaskController {
       antrianId,
       dto,
     );
+  }
+
+  @Get('/summary')
+  summaryTask(
+    @Query('periode')
+    periode: string,
+  ) {
+    return this.taskService.summaryTask(periode);
   }
 }

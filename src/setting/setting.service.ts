@@ -5,6 +5,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { PinCodeDTO } from './dto/pincode.dto';
 
 @Injectable()
 export class SettingService {
@@ -48,5 +49,25 @@ export class SettingService {
 
     return setting;
     // setting;
+  }
+
+  async securePage(dto: PinCodeDTO) {
+    const setting: object =
+      await this.prisma.setting.findFirst({
+        where: {
+          id: 1,
+        },
+      });
+
+    if (setting['pin_code'] !== dto.pin_code) {
+      throw new UnauthorizedException(
+        'Not authorized',
+      );
+    } else {
+      return {
+        status: true,
+        statusCode: 200,
+      };
+    }
   }
 }

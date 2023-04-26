@@ -201,7 +201,239 @@ export class AntrianService {
 
   async statsAntrian(periode: string) {
     // const antrians = this.prisma.filters()
+    let date = null;
+    const durasi = [];
+    const now = new Date();
+    if (periode === 'harian') {
+      date = new Date(
+        now.getTime() - 1 * 24 * 60 * 60 * 1000,
+      );
+      for (let i = 0; i < 7; i++) {
+        const jam = new Date(
+          now.getTime() - i * 60 * 60 * 1000,
+        );
+        durasi.push({
+          index: i,
+          durasi: 'harian',
+          itensitas: 'jam',
+          key: this.formatJam(jam),
+          queryAfter: jam,
+          queryBefore: durasi[i - 1]
+            ? durasi[i - 1].queryAfter
+            : new Date(now.getTime()),
+        });
+      }
+    } else if (periode === 'mingguan') {
+      date = new Date(
+        now.getTime() - 31 * 24 * 60 * 60 * 1000,
+      );
+      for (let i = 0; i < 7; i++) {
+        const tanggal = new Date(
+          now.getTime() - i * 24 * 60 * 60 * 1000,
+        );
+        durasi.push({
+          index: i,
+          durasi: 'mingguan',
+          itensitas: 'hari',
+          key: this.formatTanggal(tanggal),
+          queryAfter: tanggal,
+          queryBefore: durasi[i - 1]
+            ? durasi[i - 1].queryAfter
+            : new Date(now.getTime()),
+        });
+      }
+    } else if (periode === 'bulanan') {
+      date = new Date(
+        now.getTime() - 180 * 24 * 60 * 60 * 1000,
+      );
+      for (let i = 0; i < 31; i++) {
+        const tanggal = new Date(
+          now.getTime() - i * 24 * 60 * 60 * 1000,
+        );
+        durasi.push({
+          index: i,
+          durasi: 'bulanan',
+          itensitas: 'hari',
+          key: this.formatTanggal(tanggal),
+          queryAfter: tanggal,
+          queryBefore: durasi[i - 1]
+            ? durasi[i - 1].queryAfter
+            : new Date(now.getTime()),
+        });
+      }
+    }
 
-    return periode;
+    const menus = await this.prisma.menu.findMany(
+      {
+        where: {
+          isActive: true,
+        },
+        select: {
+          id: true,
+          label: true,
+          codeGroup: true,
+        },
+      },
+    );
+
+    const dataDetail = await Promise.all(
+      menus.map(async (menu) => {
+        const result = [];
+        durasi.map(async (item) => {
+          const x = await this.getSelectedSummary(
+            item.queryAfter,
+            item.queryBefore,
+            menu.id,
+          );
+          const com = { ...item, ...x[0] };
+          result.push(com);
+          result
+            .sort((a, b) => a.index - b.index)
+            .reverse();
+        });
+
+        return { menu, result };
+      }),
+    );
+
+    const totalAntrian = await this.getTotal(
+      date,
+    );
+
+    const result = {
+      totalAntrian,
+      dataDetail,
+    };
+
+    return result;
   }
+
+  getSelectedSummary = async (
+    valAfter: string,
+    valBefore: string,
+    menuId: number,
+  ) => {
+    const result =
+      await this.prisma.menu.findMany({
+        where: {
+          id: menuId,
+        },
+        select: {
+          _count: {
+            select: {
+              antrians: {
+                where: {
+                  createdAt: {
+                    gte: valAfter,
+                    lte: valBefore,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+    return result;
+  };
+
+  getSummary = async (
+    valAfter: string,
+    valBefore: string,
+  ) => {
+    const menus = await this.prisma.menu.findMany(
+      {
+        where: {
+          isActive: true,
+        },
+        select: {
+          label: true,
+          codeGroup: true,
+          _count: {
+            select: {
+              antrians: {
+                where: {
+                  createdAt: {
+                    gte: valAfter,
+                    lte: valBefore,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    );
+
+    return menus ? menus : 0;
+  };
+
+  getTotal = async (valAfter: string) => {
+    const menus = await this.prisma.menu.findMany(
+      {
+        select: {
+          label: true,
+          codeGroup: true,
+          _count: {
+            select: {
+              antrians: {
+                where: {
+                  createdAt: {
+                    gte: valAfter,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    );
+
+    return menus;
+  };
+
+  monthMap = {
+    0: 'Jan',
+    1: 'Feb',
+    2: 'Mar',
+    3: 'April',
+    4: 'May',
+    5: 'June',
+    6: 'July',
+    7: 'Aug',
+    8: 'Sep',
+    9: 'Oct',
+    10: 'Nov',
+    11: 'Dec',
+  };
+
+  formatTanggal = (tgl) => {
+    const tanggal = new Date(tgl);
+
+    return `${tanggal.getDate()} - ${
+      this.monthMap[tanggal.getMonth()]
+    }`;
+  };
+
+  formatJam = (tgl) => {
+    const tanggal = new Date(tgl);
+    return `${tanggal.getHours()}:00`;
+  };
+
+  formatBulan = (tgl) => {
+    const tanggal = new Date(tgl);
+    return tanggal.getMonth() + 1;
+  };
+
+  formatTahun = (tgl) => {
+    const tanggal = new Date(tgl);
+    return tanggal.getFullYear();
+  };
+
+  // queryTanggal = (val) => {
+  //   const now = new Date();
+  //   return new Date(
+  //     now.getTime() - val * 24 * 60 * 60 * 1000,
+  //   );
+  // };
 }
