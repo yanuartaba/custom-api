@@ -125,7 +125,9 @@ model Setting {
   logo_print          String?
   text_print          String?
   fontsize_print      Int        @default(20)
-  pin_code            String?    @default("1234") 
+  pin_code            String?    @default("1234")
+  background_enable   Boolean     @default(true)
+  background_img      String?      
 
   @@map("settings")
 }

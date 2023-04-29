@@ -70,4 +70,12 @@ export class UpdateSettingDto {
   @IsString()
   @IsOptional()
   pin_code: string;
+
+  @IsBoolean()
+  @IsOptional()
+  background_enable: boolean;
+
+  @IsString()
+  @IsOptional()
+  background_img: string;
 }
