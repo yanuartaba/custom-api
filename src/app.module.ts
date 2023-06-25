@@ -16,6 +16,10 @@ import { TaskModule } from './task/task.module';
 import { MediaModule } from './media/media.module';
 import { SettingModule } from './setting/setting.module';
 import { ClientPromoModule } from './client-promo/client-promo.module';
+import { RoomModule } from './room/room.module';
+import { BatchModule } from './batch/batch.module';
+import { TiketModule } from './tiket/tiket.module';
+import { RiwayatModule } from './riwayat/riwayat.module';
 
 @Module({
   imports: [
@@ -35,6 +39,10 @@ import { ClientPromoModule } from './client-promo/client-promo.module';
     MediaModule,
     SettingModule,
     ClientPromoModule,
+    RoomModule,
+    BatchModule,
+    TiketModule,
+    RiwayatModule,
   ],
   controllers: [MenuController],
   providers: [MenuService],

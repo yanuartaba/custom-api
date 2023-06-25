@@ -76,7 +76,10 @@ export class UserService {
         id: userId,
       },
       data: {
-        ...dto,
+        name: dto.name,
+        email: dto.email,
+        hash: dto.password,
+        isAdmin: dto.isAdmin,
       },
     });
 

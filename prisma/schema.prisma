@@ -143,6 +143,58 @@ model Client {
   @@map("clients")
 }
 
+model Room {
+  id                  Int        @id @default(autoincrement())
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  roomName            String
+  color               String?
+  riwayats            Riwayat[] 
+  tikets              Tiket[]
+
+  @@map("rooms")
+}
+
+model Tiket {
+  id                  Int        @id @default(autoincrement())
+  createdAt           DateTime   @default(now()) 
+  updatedAt           DateTime   @updatedAt
+  nomor               Int  
+  room                Room?      @relation(fields: [roomId], references: [id])
+  roomId              Int?        
+  isIdle              Boolean    @default(true)
+  status              Int        @default(1) 
+  riwayats            Riwayat[]
+  batchId             Int        @default(1)
+  noUrutan            Int? 
+
+  @@map("tikets")
+}
+
+model Riwayat {
+  id                  Int        @id @default(autoincrement())
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  roomId              Int  
+  room                Room       @relation(fields: [roomId], references: [id])
+  tiketId             Int  
+  tiket               Tiket      @relation(fields: [tiketId], references: [id])
+  isProses            Int        @default(1)
+
+  @@map("riwayats")
+}
+
+model Batch {
+  id                  Int        @id @default(autoincrement())
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  jumlah              Int        
+  waktuMulai          DateTime   @db.Time 
+  waktuSelesai        DateTime   @db.Time 
+
+  @@map("batchs")
+}
+
 enum BannerType {
   VIDEO
   IMAGE
