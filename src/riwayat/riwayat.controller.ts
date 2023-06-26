@@ -11,6 +11,7 @@ import {
 import { RiwayatService } from './riwayat.service';
 import { CreateRiwayatDto } from './dto/create-riwayat.dto';
 import { JwtGuard } from 'src/aurh/guard';
+import { UpdateRiwayatDto } from './dto/update-riwayat.dto';
 
 @Controller('riwayat')
 export class RiwayatController {
@@ -23,14 +24,19 @@ export class RiwayatController {
     return this.riwayatService.createRiwayat(dto);
   }
 
-  @Patch(':id')
+  @UseGuards(JwtGuard)
+  @Patch(':roomId/:tiketId')
   updateRiwayat(
-    @Param('id', ParseIntPipe) riwayatId: number,
-    @Body() dto: CreateRiwayatDto,
+    @Param('roomId', ParseIntPipe) roomId: number,
+    @Param('tiketId', ParseIntPipe)
+    tiketId: number,
+    @Body()
+    dtoUpdate: UpdateRiwayatDto,
   ) {
     return this.riwayatService.updateRiwayat(
-      riwayatId,
-      dto,
+      roomId,
+      tiketId,
+      dtoUpdate,
     );
   }
 

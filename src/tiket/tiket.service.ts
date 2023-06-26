@@ -51,6 +51,10 @@ export class TiketService {
         isIdle: tiket.isIdle,
         riwayatId: e.id,
         status: e.isProses,
+        durasiAll: this.differentTime(
+          tiket.createdAt.toString(),
+          tiket.updatedAt.toString(),
+        ),
         durasi: this.differentTime(
           e.createdAt.toString(),
           e.updatedAt.toString(),

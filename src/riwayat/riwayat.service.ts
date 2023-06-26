@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRiwayatDto } from './dto/create-riwayat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateRiwayatDto } from './dto/update-riwayat.dto';
 
 @Injectable()
 export class RiwayatService {
@@ -23,13 +24,25 @@ export class RiwayatService {
   }
 
   async updateRiwayat(
-    riwayatId: number,
-    dto: CreateRiwayatDto,
+    roomId: number,
+    tiketId: number,
+    dtoUpdate: UpdateRiwayatDto,
   ) {
     const riwayat =
       await this.prisma.riwayat.findFirst({
         where: {
-          id: riwayatId,
+          AND: [
+            {
+              roomId: {
+                equals: roomId,
+              },
+            },
+            {
+              tiketId: {
+                equals: tiketId,
+              },
+            },
+          ],
         },
       });
 
@@ -41,10 +54,10 @@ export class RiwayatService {
     const updateData =
       await this.prisma.riwayat.update({
         where: {
-          id: riwayatId,
+          id: riwayat.id,
         },
         data: {
-          ...dto,
+          ...dtoUpdate,
         },
       });
 
