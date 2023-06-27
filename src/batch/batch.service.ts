@@ -136,7 +136,11 @@ export class BatchService {
   formatTime(waktu) {
     const d = new Date(waktu);
 
-    return d.toLocaleTimeString();
+    return d.toLocaleTimeString('en-EN', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 
   formatDateHour(waktu) {
